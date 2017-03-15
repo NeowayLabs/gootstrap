@@ -14,4 +14,6 @@ keep it very simple and without strong opinions (like Makefiles, docker stuff).
 
 ## Installation
 
-Really, just copy the scripts to wherever you want them to be and use them.
+The only dependency of this project is [nash](https://github.com/NeowayLabs/nash).
+Installing it is trivial. After installing it, just copy the scripts to
+wherever you want them to be and use them.
