@@ -30,9 +30,3 @@ fn cover(project) {
 
 	chdir($cwd)
 }
-
-fn canonPath(package) {
-	canon <= echo $package | sed "s#/#.#g"
-
-	return $canon
-}
