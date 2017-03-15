@@ -1,14 +1,17 @@
-#!/usr/bin/env bash
+#!/usr/bin/env nash
 
-set -o errexit
-set -o nounset
+packages <= go list ./... | grep -v vendor
+echo "generating coverage for packages: " + $packages
 
-echo "" > coverage.txt
+coveragefile = "coverage.txt"
+echo "" > $coveragefile
 
-for d in $(go list ./... | grep -v vendor); do
-    go test -v -race -coverprofile=profile.out -covermode=atomic $d
-    if [ -f profile.out ]; then
-        cat profile.out >> coverage.txt
-        rm profile.out
-    fi
-done
+for package in $packages {
+        profilefile = "." + $package + ".profile"
+        go test -v -race -coverprofile=$profilefile -covermode=atomic $package
+        -ls $profilefile
+        if $status == "0" {
+                cat $profilefile | tee --append $coveragefile
+                rm $profilefile
+        }
+}
