@@ -1,17 +1,41 @@
 #!/usr/bin/env nash
 
-packages <= go list ./... | grep -v vendor
-echo "generating coverage for packages: " + $packages
+fn cover(project) {
+	cwd <= pwd
 
-coveragefile = "coverage.txt"
-echo "" > $coveragefile
+	chdir($GOPATH+"/src/"+$project)
 
-for package in $packages {
-        profilefile = "." + $package + ".profile"
-        go test -v -race -coverprofile=$profilefile -covermode=atomic $package
-        -ls $profilefile
-        if $status == "0" {
-                cat $profilefile | tee --append $coveragefile
-                rm $profilefile
-        }
+	packages     <= go list ./... | grep -v vendor
+	packages     <= split($packages, "\n")
+
+	coveragefile = "coverage.txt"
+
+	rm -f $coveragefile
+	echo "mode: count" > coverage.txt
+
+	for package in $packages {
+		canon <= canonPath($package)
+
+		profilefile = "."+$canon+".profile"
+
+		go test -v -race "-coverprofile="+$profilefile -covermode=atomic $package
+
+		_, status <= test -f $profilefile
+
+		if $status == "0" {
+			cat $profilefile | tail -n "+2" | tee --append $coveragefile >[1=]
+
+			rm $profilefile
+		}
+	}
+
+	go tool cover -func coverage.txt
+
+	chdir($cwd)
+}
+
+fn canonPath(package) {
+	canon <= echo $package | sed "s#/#.#g"
+
+	return $canon
 }
