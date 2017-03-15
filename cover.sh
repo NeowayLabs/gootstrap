@@ -9,27 +9,24 @@ fn cover(project) {
 	packages     <= split($packages, "\n")
 
 	coveragefile = "coverage.txt"
+	profilefile  = "profile.out"
 
 	rm -f $coveragefile
-	echo "mode: count" > coverage.txt
+	echo "mode: count" > $coveragefile
 
 	for package in $packages {
-		canon <= canonPath($package)
-
-		profilefile = "."+$canon+".profile"
-
+		rm -f $profilefile
 		go test -v -race "-coverprofile="+$profilefile -covermode=atomic $package
 
 		_, status <= test -f $profilefile
 
 		if $status == "0" {
 			cat $profilefile | tail -n "+2" | tee --append $coveragefile >[1=]
-
-			rm $profilefile
 		}
 	}
 
-	go tool cover -func coverage.txt
+	rm -f $profilefile
+	go tool cover -func $coveragefile
 
 	chdir($cwd)
 }
