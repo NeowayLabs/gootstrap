@@ -8,9 +8,11 @@ to your Go project to help you:
 * Vendor things, like conan (no semver, you have integration tests right ?)
 * Run tests recursively without including the vendor directory
 * Run tests with coverage, coalescing all the packages reports in one
+* Cool static analysis
+* Embedding --version on binaries using git commit tag
 
 Perhaps it may have more scripts on the future, but the idea is to
-keep it very simple and without strong opinions (like Makefiles, docker stuff).
+keep it as simple as possible while useful in our context.
 
 ## Installation
 
