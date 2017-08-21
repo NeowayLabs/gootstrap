@@ -1,6 +1,6 @@
 version ?= latest
-{{project}}_img={{docker_registry}}/{{project}}:$(version)
-devimg=phogdev
+{{project}}img={{docker_registry}}/{{project}}:$(version)
+devimg={{project}}dev
 rundev=docker run -ti --rm $(devimg)
 
 guard-%:
@@ -14,10 +14,10 @@ release: guard-version publish
 	git push origin $(version)
 
 publish: image
-	docker push $({{project}}_img)
+	docker push $({{project}}img)
 
 image: build
-	docker build -t $({{project}}_img) .
+	docker build -t $({{project}}img) .
 
 imagedev:
 	docker build -t $(devimg) -f ./hack/Dockerfile.dev .
