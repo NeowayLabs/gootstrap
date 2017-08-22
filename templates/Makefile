@@ -27,7 +27,7 @@ vendor: imagedev
 	sudo chown -R $(USER):$(USER) ./vendor
 
 build: imagedev
-	$(rundev) ./hack/build.sh
+	$(rundev) go build ./cmd/{{project}}/{{project}}.go -ldflags "-X main.Version=$(version)" -v
 
 analyze:
 	$(rundev) ./hack/analyze.sh
