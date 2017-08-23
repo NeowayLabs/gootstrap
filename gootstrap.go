@@ -11,23 +11,34 @@ func getTemplatesToOutput(
 	templatesdir string,
 	outputdir string,
 ) map[string]string {
-	templateToOut := map[string]string{}
-	files := getfiles(templatesdir)
+	templateDesc := newTemplateDescriptor(templatesdir)
 	return nil
 }
 
-func getfiles(dir string) []string {
-	files := []string{}
+type templateDescriptor struct {
+	dirs  []string
+	files []string
+}
 
-	filepath.Walk(dir, func(path string, info os.FileInfo, err error) {
+func newTemplateDescriptor(dir string) templateDescriptor {
+	desc := templateDescriptor{}
+	desc.dirs = append(desc.dirs, dir)
+
+	filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if info.IsDir() {
-			files = append(files, getfiles(path))
+			if path == dir {
+				return err
+			}
+			recursiveDesc := newTemplateDescriptor(path)
+			desc.dirs = append(desc.dirs, recursiveDesc.dirs...)
+			desc.files = append(desc.files, recursiveDesc.files...)
 		} else {
-			files = append(files, path)
+			desc.files = append(desc.files, path)
 		}
+		return err
 	})
 
-	return files
+	return desc
 }
 
 func prepareDirectories(templateToOut map[string]string) {
