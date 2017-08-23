@@ -5,24 +5,38 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 )
-
-func getTemplatesToOutput(
-	templatesdir string,
-	outputdir string,
-) map[string]string {
-	templateDesc := newTemplateDescriptor(templatesdir)
-	return nil
-}
 
 type templateDescriptor struct {
 	dirs  []string
 	files []string
 }
 
+func getTemplatesToOutput(
+	templatesdir string,
+	outputdir string,
+) map[string]string {
+	templateDesc := newTemplateDescriptor(templatesdir)
+	fmt.Println(templateDesc)
+	prepareDirectories(outputdir, templateDesc.dirs)
+	return nil
+}
+
+func relativePath(path string) (string, bool) {
+	parsedPath := strings.Split(path, "/templates/")
+	if len(parsedPath) > 1 {
+		return parsedPath[len(parsedPath)-1], true
+	}
+
+	return "", false
+}
+
 func newTemplateDescriptor(dir string) templateDescriptor {
 	desc := templateDescriptor{}
-	desc.dirs = append(desc.dirs, dir)
+	if d, ok := relativePath(dir); ok {
+		desc.dirs = append(desc.dirs, d)
+	}
 
 	filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if info.IsDir() {
@@ -41,7 +55,8 @@ func newTemplateDescriptor(dir string) templateDescriptor {
 	return desc
 }
 
-func prepareDirectories(templateToOut map[string]string) {
+func prepareDirectories(output string, dirs []string) {
+	// TODO: check for empty dirs, create if do not exists
 }
 
 func applyTemplates(
@@ -94,6 +109,5 @@ func main() {
 	flag.Parse()
 
 	templateToOut := getTemplatesToOutput(templatesdir, outputdir)
-	prepareDirectories(templateToOut)
 	applyTemplates(templateToOut, project, docker_registry)
 }
