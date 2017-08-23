@@ -12,7 +12,7 @@ var (
 
 func main() {
 
-	version := ""
+	version := false
 	flag.BoolVar(&version, "version", false, "Show version")
 	flag.Parse()
 

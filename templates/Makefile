@@ -1,7 +1,11 @@
 version ?= latest
 {{.Name}}img={{.DockerRegistry}}/{{.Name}}:$(version)
 devimg={{.Name}}dev
-rundev=docker run -ti --rm $(devimg)
+packagename=$(shell pwd | sed "s:"$(GOPATH)"/src/::")
+workdir=/go/src/$(packagename)
+rundev=docker run -ti --rm -v `pwd`:$(workdir) --workdir $(workdir) $(devimg)
+# TODO: gitversion: use git commit if version is latest
+gitversion=$(version)
 
 guard-%:
 	@ if [ "${${*}}" = "" ]; then \
@@ -27,7 +31,7 @@ vendor: imagedev
 	sudo chown -R $(USER):$(USER) ./vendor
 
 build: imagedev
-	$(rundev) go build ./cmd/{{.Name}}/main.go -ldflags "-X main.Version=$(version)" -v
+	$(rundev) go build -v -ldflags "-X main.Version=$(gitversion)" ./cmd/{{.Name}}/main.go
 
 analyze:
 	$(rundev) ./hack/analyze.sh
@@ -41,5 +45,5 @@ coverage: imagedev
 coverage-show: coverage
 	xdg-open fullcov.html
 
-shelldev: imagedev
+shell: imagedev
 	$(rundev)
