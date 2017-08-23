@@ -3,8 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 )
@@ -17,11 +19,34 @@ type templateDescriptor struct {
 func getTemplatesToOutput(
 	templatesdir string,
 	outputdir string,
+	project string,
 ) map[string]string {
 	templateDesc := newTemplateDescriptor(templatesdir)
-	fmt.Println(templateDesc)
-	prepareDirectories(outputdir, templateDesc.dirs)
-	return nil
+	templateToOutput := map[string]string{}
+	outputdirs := map[string]struct{}{}
+
+	for _, templatefile := range templateDesc.files {
+		templatedPath, ok := relativePath(templatefile)
+		if !ok {
+			fmt.Printf("unexpected path[%s], unable to parse it\n", templatefile)
+			os.Exit(1)
+		}
+		relativePath := applyPathTemplate(templatedPath, project)
+		outputfile := path.Join(outputdir, relativePath)
+		templateToOutput[templatefile] = outputfile
+		outputdirs[filepath.Dir(outputfile)] = struct{}{}
+	}
+
+	for outdir, _ := range outputdirs {
+		err := os.MkdirAll(outdir, 0775)
+		fatalerr(err, fmt.Sprintf("creating inner output dir[%s]", outdir))
+	}
+
+	return templateToOutput
+}
+
+func applyPathTemplate(templatedPath string, project string) string {
+	return strings.Replace(templatedPath, "{{project}}", project, -1)
 }
 
 func relativePath(path string) (string, bool) {
@@ -56,15 +81,30 @@ func newTemplateDescriptor(dir string) templateDescriptor {
 	return desc
 }
 
-func prepareDirectories(output string, dirs []string) {
-	// TODO: check for empty dirs, create if do not exists
-}
-
 func applyTemplates(
-	templateToOut map[string]string,
+	templateToOutput map[string]string,
 	project string,
-	docker_registry string,
+	dockerRegistry string,
 ) {
+	type ProjectInfo struct {
+		Name           string
+		DockerRegistry string
+	}
+	projectInfo := ProjectInfo{
+		Name:           project,
+		DockerRegistry: dockerRegistry,
+	}
+	for templatefile, outputfile := range templateToOutput {
+		out, err := os.Create(outputfile)
+		fatalerr(err, fmt.Sprintf("creating output file[%s]", outputfile))
+		defer out.Close()
+
+		tmpl, err := template.ParseFiles(templatefile)
+		fatalerr(err, fmt.Sprintf("creating template from file[%s]", templatefile))
+
+		err = tmpl.Execute(out, projectInfo)
+		fatalerr(err, fmt.Sprintf("executing template[%s]", templatefile))
+	}
 }
 
 func fatalerr(err error, context string) {
@@ -79,7 +119,7 @@ func getGoPath() string {
 	if gopath != "" {
 		return gopath
 	}
-	return os.Getenv("HOME") + "/go"
+	return path.Join(os.Getenv("HOME"), "go")
 }
 
 func getTemplatesDir() string {
@@ -132,25 +172,29 @@ func guaranteeEmptyDir(outputdir string) {
 func main() {
 	outputdir := ""
 	project := ""
-	docker_registry := ""
+	dockerRegistry := ""
 
 	cwd, err := os.Getwd()
 	fatalerr(err, "getting default cwd")
 	templatesdir := getTemplatesDir()
 
 	flag.StringVar(&project, "project", "", "project name (required)")
-	flag.StringVar(&docker_registry, "docker-registry", "", "docker registry base name (required)")
+	flag.StringVar(&dockerRegistry, "docker-registry", "", "docker registry base name (required)")
 	flag.StringVar(&outputdir, "output", cwd, "output directory where project will be created (optional)")
 	flag.Parse()
 
 	requiredOption(project, "'project' is a required option")
-	requiredOption(docker_registry, "'docker-registry' is a required option")
+	requiredOption(dockerRegistry, "'docker-registry' is a required option")
 
-	fmt.Printf("\ncreating: project[%s] docker-registry[%s] output[%s]\n\n", project, docker_registry, outputdir)
+	fmt.Printf("\ncreating: project[%s] docker-registry[%s] output[%s]\n\n", project, dockerRegistry, outputdir)
 
-	outputdir += "/" + project
+	outputdir = path.Join(outputdir, project)
 
 	guaranteeEmptyDir(outputdir)
-	templateToOut := getTemplatesToOutput(templatesdir, outputdir)
-	applyTemplates(templateToOut, project, docker_registry)
+
+	templateToOut := getTemplatesToOutput(templatesdir, outputdir, project)
+
+	applyTemplates(templateToOut, project, dockerRegistry)
+
+	fmt.Println("success")
 }

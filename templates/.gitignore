@@ -1,1 +1,1 @@
-cmd/{{project}}/{{project}}
+cmd/{{.Name}}/{{.Name}}

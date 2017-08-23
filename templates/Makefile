@@ -1,6 +1,6 @@
 version ?= latest
-{{project}}img={{docker_registry}}/{{project}}:$(version)
-devimg={{project}}dev
+{{.Name}}img={{.DockerRegistry}}/{{.Name}}:$(version)
+devimg={{.Name}}dev
 rundev=docker run -ti --rm $(devimg)
 
 guard-%:
@@ -14,10 +14,10 @@ release: guard-version publish
 	git push origin $(version)
 
 publish: image
-	docker push $({{project}}img)
+	docker push $({{.Name}}img)
 
 image: build
-	docker build -t $({{project}}img) .
+	docker build -t $({{.Name}}img) .
 
 imagedev:
 	docker build -t $(devimg) -f ./hack/Dockerfile.dev .
@@ -27,7 +27,7 @@ vendor: imagedev
 	sudo chown -R $(USER):$(USER) ./vendor
 
 build: imagedev
-	$(rundev) go build ./cmd/{{project}}/{{project}}.go -ldflags "-X main.Version=$(version)" -v
+	$(rundev) go build ./cmd/{{.Name}}/main.go -ldflags "-X main.Version=$(version)" -v
 
 analyze:
 	$(rundev) ./hack/analyze.sh
