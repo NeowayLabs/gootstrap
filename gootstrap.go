@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -68,7 +69,8 @@ func applyTemplates(
 
 func fatalerr(err error, context string) {
 	if err != nil {
-		panic(fmt.Sprintf("error[%s] while[%s]", err, context))
+		fmt.Printf("error[%s] while[%s]\n", err, context)
+		os.Exit(1)
 	}
 }
 
@@ -94,6 +96,39 @@ func getTemplatesDir() string {
 	return templatesdir
 }
 
+func requiredOption(v string, msg string) {
+	if v == "" {
+		fmt.Println(msg + ":\n")
+		flag.PrintDefaults()
+		fmt.Println()
+		os.Exit(1)
+	}
+}
+
+func guaranteeEmptyDir(outputdir string) {
+
+	info, err := os.Stat(outputdir)
+
+	if os.IsNotExist(err) {
+		err := os.MkdirAll(outputdir, 0775)
+		fatalerr(err, fmt.Sprintf("creating output dir[%s]", outputdir))
+		return
+	}
+
+	if !info.IsDir() {
+		fmt.Printf("outputdir[%s] already exists and it is not a directory\n", outputdir)
+		os.Exit(1)
+	}
+
+	files, err := ioutil.ReadDir(outputdir)
+	fatalerr(err, fmt.Sprintf("listing outputdir[%s]", outputdir))
+
+	if len(files) > 0 {
+		fmt.Printf("outputdir[%s] already exists and it is not empty\n", outputdir)
+		os.Exit(1)
+	}
+}
+
 func main() {
 	outputdir := ""
 	project := ""
@@ -103,11 +138,19 @@ func main() {
 	fatalerr(err, "getting default cwd")
 	templatesdir := getTemplatesDir()
 
-	flag.StringVar(&project, "project", "", "project name")
-	flag.StringVar(&docker_registry, "docker-registry", "", "docker registry base name")
-	flag.StringVar(&outputdir, "output", cwd, "output directory where all files will be created")
+	flag.StringVar(&project, "project", "", "project name (required)")
+	flag.StringVar(&docker_registry, "docker-registry", "", "docker registry base name (required)")
+	flag.StringVar(&outputdir, "output", cwd, "output directory where project will be created (optional)")
 	flag.Parse()
 
+	requiredOption(project, "'project' is a required option")
+	requiredOption(docker_registry, "'docker-registry' is a required option")
+
+	fmt.Printf("\ncreating: project[%s] docker-registry[%s] output[%s]\n\n", project, docker_registry, outputdir)
+
+	outputdir += "/" + project
+
+	guaranteeEmptyDir(outputdir)
 	templateToOut := getTemplatesToOutput(templatesdir, outputdir)
 	applyTemplates(templateToOut, project, docker_registry)
 }
