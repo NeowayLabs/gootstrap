@@ -19,6 +19,10 @@ simple, specially with vendoring) but at least avoids differences on Go
 versions between developers and CI servers, also promotes uniformity on how
 we work with other languages.
 
+We are also striving to do governance through code, spreading
+good practices and good tooling out to new projects, reducing time
+to bootstrap new projects.
+
 ## Installation
 
 Run:
