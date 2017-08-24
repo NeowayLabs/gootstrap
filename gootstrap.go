@@ -94,7 +94,16 @@ func applyTemplates(
 
 		err = tmpl.Execute(out, projectInfo)
 		fatalerr(err, fmt.Sprintf("executing template[%s]", templatefile))
+
+		applySamePermissions(templatefile, outputfile)
 	}
+}
+
+func applySamePermissions(srcfile string, dstfile string) {
+	info, err := os.Stat(srcfile)
+	fatalerr(err, fmt.Sprintf("calling stat on file[%s]", srcfile))
+	err = os.Chmod(dstfile, info.Mode())
+	fatalerr(err, fmt.Sprintf("calling chmod on file[%s]", dstfile))
 }
 
 func fatalerr(err error, context string) {

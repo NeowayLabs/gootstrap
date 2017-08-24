@@ -25,3 +25,6 @@ make check
 make analyze
 make coverage
 make image
+
+echo
+echo "basic functionalities seems intact"
