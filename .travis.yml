@@ -1,8 +1,12 @@
 os:
   - linux
 
+sudo: required
+
+services:
+  - docker
+
 language: go
-sudo: false
 
 go:
   - tip
