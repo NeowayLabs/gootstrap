@@ -31,7 +31,7 @@ func getTemplatesToOutput(
 		outputdirs[filepath.Dir(outputfile)] = struct{}{}
 	}
 
-	for outdir, _ := range outputdirs {
+	for outdir := range outputdirs {
 		err := os.MkdirAll(outdir, 0775)
 		fatalerr(err, fmt.Sprintf("creating inner output dir[%s]", outdir))
 	}
