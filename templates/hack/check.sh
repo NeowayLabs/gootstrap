@@ -8,6 +8,7 @@ if [ $# -eq 0 ]
         for d in $(go list ./... | grep -v vendor); do
             go test -v -race $d
         done
+        exit
 fi
 
 pkg=$1
