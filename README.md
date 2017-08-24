@@ -11,11 +11,33 @@ to your Go project to help you:
 * Cool static analysis
 * Embedding --version on binaries using git commit tag
 
-Perhaps it may have more scripts on the future, but the idea is to
-keep it as simple as possible while useful in our context.
+All commands happens on top of docker since it
+is the basis of our development environments and production deployment.
+
+It has much less usefulness in Go than other languages (since Go is very
+simple, specially with vendoring) but at least avoids differences on Go
+versions between developers and CI servers, also promotes uniformity on how
+we work with other languages.
 
 ## Installation
 
-The only dependency of this project is [nash](https://github.com/NeowayLabs/nash).
-Installing it is trivial. After installing it, just copy the scripts to
-wherever you want them to be and use them.
+Run:
+
+```
+go get github.com/NeowayLabs/gootstrap
+```
+
+And that is it =)
+
+## Usage
+
+The help of the project should be enough, just be
+aware that besides running everything inside docker
+it is important that the project is inside the
+GOPATH of your host.
+
+Some details on how the code is mapped to the containers
+depend on this, also if you do so you will be able
+to build and run tests directly on your host too if
+you want (autocomplete and code navigation will also
+work properly in vendored dependencies).
