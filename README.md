@@ -35,9 +35,25 @@ And that is it =)
 
 ## Usage
 
-The help of the project should be enough, just be
-aware that besides running everything inside docker
-it is important that the project is inside the
+After creating the local directory for your Go project
+(or cloning it), you will have something like:
+
+```
+$GOPATH/src/domain/yourproject
+```
+
+Just:
+
+```
+cd $GOPATH/src/domain/yourproject
+./gootstrap <option1> <option2>
+```
+
+The help of the project should be enough to elaborate
+on available options.
+
+Just be aware that besides running everything inside docker
+containers it is important that the project is inside the
 GOPATH of your host.
 
 Some details on how the code is mapped to the containers
@@ -45,3 +61,7 @@ depend on this, also if you do so you will be able
 to build and run tests directly on your host too if
 you want (autocomplete and code navigation will also
 work properly in vendored dependencies).
+
+Also be aware that gootstrap WILL overwrite files if it
+finds files with the same name, so have everything commited before
+running it. Files that are unknown to gootstrap will be left alone.
