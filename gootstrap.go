@@ -4,28 +4,22 @@ import (
 	"flag"
 	"fmt"
 	"html/template"
-	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
 )
 
-type templateDescriptor struct {
-	dirs  []string
-	files []string
-}
-
 func getTemplatesToOutput(
 	templatesdir string,
 	outputdir string,
 	project string,
 ) map[string]string {
-	templateDesc := newTemplateDescriptor(templatesdir)
+	files := getTemplateFiles(templatesdir)
 	templateToOutput := map[string]string{}
 	outputdirs := map[string]struct{}{}
 
-	for _, templatefile := range templateDesc.files {
+	for _, templatefile := range files {
 		templatedPath, ok := relativePath(templatefile)
 		if !ok {
 			fmt.Printf("unexpected path[%s], unable to parse it\n", templatefile)
@@ -58,27 +52,23 @@ func relativePath(path string) (string, bool) {
 	return "", false
 }
 
-func newTemplateDescriptor(dir string) templateDescriptor {
-	desc := templateDescriptor{}
-	if d, ok := relativePath(dir); ok {
-		desc.dirs = append(desc.dirs, d)
-	}
+func getTemplateFiles(dir string) []string {
+	files := []string{}
 
 	filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if info.IsDir() {
 			if path == dir {
 				return err
 			}
-			recursiveDesc := newTemplateDescriptor(path)
-			desc.dirs = append(desc.dirs, recursiveDesc.dirs...)
-			desc.files = append(desc.files, recursiveDesc.files...)
+			recursiveFiles := getTemplateFiles(path)
+			files = append(files, recursiveFiles...)
 		} else {
-			desc.files = append(desc.files, path)
+			files = append(files, path)
 		}
 		return err
 	})
 
-	return desc
+	return files
 }
 
 func applyTemplates(
@@ -145,30 +135,6 @@ func requiredOption(v string, msg string) {
 	}
 }
 
-func guaranteeEmptyDir(outputdir string) {
-
-	info, err := os.Stat(outputdir)
-
-	if os.IsNotExist(err) {
-		err := os.MkdirAll(outputdir, 0775)
-		fatalerr(err, fmt.Sprintf("creating output dir[%s]", outputdir))
-		return
-	}
-
-	if !info.IsDir() {
-		fmt.Printf("outputdir[%s] already exists and it is not a directory\n", outputdir)
-		os.Exit(1)
-	}
-
-	files, err := ioutil.ReadDir(outputdir)
-	fatalerr(err, fmt.Sprintf("listing outputdir[%s]", outputdir))
-
-	if len(files) > 0 {
-		fmt.Printf("outputdir[%s] already exists and it is not empty\n", outputdir)
-		os.Exit(1)
-	}
-}
-
 func main() {
 	outputdir := ""
 	project := ""
@@ -187,10 +153,6 @@ func main() {
 	requiredOption(dockerRegistry, "'docker-registry' is a required option")
 
 	fmt.Printf("\ncreating: project[%s] docker-registry[%s] output[%s]\n\n", project, dockerRegistry, outputdir)
-
-	outputdir = path.Join(outputdir, project)
-
-	guaranteeEmptyDir(outputdir)
 
 	templateToOut := getTemplatesToOutput(templatesdir, outputdir, project)
 
