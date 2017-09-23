@@ -62,6 +62,5 @@ to build and run tests directly on your host too if
 you want (autocomplete and code navigation will also
 work properly in vendored dependencies).
 
-Also be aware that gootstrap WILL overwrite files if it
-finds files with the same name, so have everything commited before
-running it. Files that are unknown to gootstrap will be left alone.
+Files that are unknown to gootstrap or that already exists
+will be left alone.

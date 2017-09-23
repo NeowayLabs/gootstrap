@@ -85,6 +85,14 @@ func applyTemplates(
 		DockerRegistry: dockerRegistry,
 	}
 	for templatefile, outputfile := range templateToOutput {
+		if _, err := os.Stat(outputfile); err == nil {
+			fmt.Printf(
+				"skipping template[%s] because outputfile[%s] already exists\n",
+				templatefile,
+				outputfile,
+			)
+			continue
+		}
 		out, err := os.Create(outputfile)
 		fatalerr(err, fmt.Sprintf("creating output file[%s]", outputfile))
 		defer out.Close()
