@@ -27,8 +27,9 @@ imagedev:
 	docker build -t $(devimg) -f ./hack/Dockerfile.dev .
 
 vendor: imagedev
-	$(rundev) govend --update --prune
+	$(rundev) ./hack/vendor.sh
 	chown -R $(USER):$(USER) ./vendor
+	chown -R $(USER):$(USER) ./Godeps
 
 build: imagedev
 	$(rundev) go build -v -ldflags "-X main.Version=$(gitversion)" -o ./cmd/{{.Name}}/{{.Name}} ./cmd/{{.Name}}/main.go
