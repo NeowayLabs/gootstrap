@@ -6,4 +6,4 @@ job-analyze:
 job-check:
   stage: test
   script:
-    - make check
+    - make check-ci

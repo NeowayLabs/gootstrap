@@ -30,20 +30,23 @@ imagedev:
 
 vendor: imagedev
 	$(runcmd) ./hack/vendor.sh
-	chown -R $(USER):$(USER) ./vendor
-	chown -R $(USER):$(USER) ./Godeps
+	sudo chown -R $(USER):$(USER) ./vendor
+	sudo chown -R $(USER):$(USER) ./Godeps
 
 build: imagedev
 	$(runcmd) go build -v -ldflags "-X main.Version=$(gitversion)" -o ./cmd/{{.Name}}/{{.Name}} ./cmd/{{.Name}}/main.go
 
 analyze:
-	$(runcmd) ./hack/analyze.sh
+	$(runshell) ./hack/analyze.sh
 
 check: imagedev
+	$(runshell) ./hack/check.sh $(pkg) $(test)
+
+check-ci: imagedev
 	$(runcmd) ./hack/check.sh $(pkg) $(test)
 
 coverage: imagedev
-	$(runcmd) ./hack/coverage.sh
+	$(runshell) ./hack/coverage.sh
 
 coverage-show: coverage
 	xdg-open fullcov.html
