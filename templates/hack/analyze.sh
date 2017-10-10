@@ -5,7 +5,7 @@ set -o nounset
 
 echo "performing static analysis on the code"
 
-for pkg in $(go list ./... | grep -v vendor); do
+for pkg in $(go list ./...); do
     go vet $pkg
     staticcheck $pkg
     gosimple $pkg
