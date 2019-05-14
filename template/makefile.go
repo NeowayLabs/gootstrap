@@ -5,8 +5,7 @@ import (
 )
 
 type MakefileCfg struct {
-	Project string
-	Group   string
+	DockerImg string
 }
 
 func Makefile(cfg MakefileCfg) (string, error) {
@@ -15,8 +14,8 @@ func Makefile(cfg MakefileCfg) (string, error) {
 }
 
 const makefileTemplate = `version ?= latest
-img = registry.neoway.com.br/{{.Group}}/{{.Project}}:$(version)
-imgdev = {{.Project}}dev:$(version)
+img = {{.DockerImg}}/:$(version)
+imgdev = {{.DockerImg}}dev:$(version)
 run=docker run --rm -ti -v $(shell pwd):/app $(img)
 cov=coverage.out
 covhtml=coverage.html
