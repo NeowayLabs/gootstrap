@@ -3,8 +3,6 @@
 set -o errexit
 set -o nounset
 
-export GO111MODULE="on"
-
 projectdir=$(mktemp -d)
 trap "rm -rf $projectdir" EXIT
 
