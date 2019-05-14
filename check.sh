@@ -13,7 +13,7 @@ echo "building"
 go build ./cmd/gootstrap
 
 echo "running gootstrap"
-./gootstrap --output-dir $projectdir --project gootstraptest --docker-registry gootstraptest
+./gootstrap --output-dir $projectdir --module "whatever.com/group/project" --docker-image "group/project"
 
 echo
 echo "let the tests begin"

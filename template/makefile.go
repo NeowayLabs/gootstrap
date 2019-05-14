@@ -5,6 +5,7 @@ import (
 )
 
 type MakefileCfg struct {
+	Project   string
 	DockerImg string
 }
 
