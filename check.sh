@@ -3,18 +3,17 @@
 set -o errexit
 set -o nounset
 
-projectdir=$(mktemp --dry-run -d $GOPATH/src/gootstraptest/XXXXXXX)
+projectdir=$(mktemp -d)
 trap "rm -rf $projectdir" EXIT
-mkdir -p $projectdir
 
 echo
 echo "testdir is: "$projectdir
 
 echo "building"
-go build .
+go build ./cmd/gootstrap
 
 echo "running gootstrap"
-./gootstrap --output $projectdir --project gootstraptest --docker-registry gootstraptest
+./gootstrap --output-dir $projectdir --project gootstraptest --docker-registry gootstraptest
 
 echo
 echo "let the tests begin"
