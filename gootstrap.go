@@ -24,18 +24,25 @@ type Config struct {
 // CreateProject creates a project
 func CreateProject(cfg Config, rootdir string) error {
 	files := map[string]string{
-		"go.sum":          "",
-		"go.mod":          template.GoMod,
-		"Makefile":        template.Makefile,
-		"Dockerfile":      template.Dockerfile,
-		"hack/Dockerfile": template.DockerfileDev,
+		"go.sum":                           "",
+		"go.mod":                           template.GoMod,
+		"Makefile":                         template.Makefile,
+		"Dockerfile":                       template.Dockerfile,
+		"hack/Dockerfile":                  template.DockerfileDev,
+		"cmd/{{.Project}}/{{.Project}}.go": template.Cmd,
 	}
 
-	for path, tmpl := range files {
-		contents, err := execTemplate(path, tmpl, cfg)
+	for pathtmpl, contenttmpl := range files {
+		path, err := execTemplate(pathtmpl, pathtmpl, cfg)
 		if err != nil {
 			return err
 		}
+
+		contents, err := execTemplate(path, contenttmpl, cfg)
+		if err != nil {
+			return err
+		}
+
 		if err := writeFile(filepath.Join(rootdir, path), contents); err != nil {
 			return err
 		}
