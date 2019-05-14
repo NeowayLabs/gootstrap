@@ -1,5 +1,3 @@
 package template
 
-const GoMod = `module {{.Module}}
-
-go {{.GoVersion}}`
+const GoMod = "module {{.Module}}"
