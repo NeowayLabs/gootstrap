@@ -32,10 +32,6 @@ echo "analyzing"
 make analyze
 
 echo
-echo "coverage"
-make coverage
-
-echo
 echo "final image build"
 make image
 
