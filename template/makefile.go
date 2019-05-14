@@ -1,20 +1,6 @@
 package template
 
-import (
-	"fmt"
-)
-
-type MakefileCfg struct {
-	Project   string
-	DockerImg string
-}
-
-func Makefile(cfg MakefileCfg) (string, error) {
-	name := fmt.Sprintf("makefile:%v", cfg)
-	return apply(name, makefileTemplate, cfg)
-}
-
-const makefileTemplate = `version ?= latest
+const Makefile = `version ?= latest
 img = {{.DockerImg}}:$(version)
 imgdev = {{.DockerImg}}dev:$(version)
 run=docker run --rm -ti -v $(shell pwd):/app $(imgdev)

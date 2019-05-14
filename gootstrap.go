@@ -1,0 +1,78 @@
+package gootstrap
+
+import (
+	"bytes"
+	"fmt"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	texttemplate "text/template"
+
+	"github.com/NeowayLabs/gootstrap/template"
+)
+
+// Config used by template functions
+type Config struct {
+	Project       string
+	Module        string
+	DockerImg     string
+	GoVersion     string
+	CILintVersion string
+	AlpineVersion string
+}
+
+// CreateProject creates a project
+func CreateProject(cfg Config, rootdir string) error {
+	files := map[string]string{
+		"go.sum":          "",
+		"go.mod":          template.GoMod,
+		"Makefile":        template.Makefile,
+		"Dockerfile":      template.Dockerfile,
+		"hack/Dockerfile": template.DockerfileDev,
+	}
+
+	for path, tmpl := range files {
+		contents, err := execTemplate(path, tmpl, cfg)
+		if err != nil {
+			return err
+		}
+		if err := writeFile(filepath.Join(rootdir, path), contents); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func writeFile(path string, contents string) error {
+	dir := filepath.Dir(path)
+	if err := ensureDir(dir); err != nil {
+		return err
+	}
+
+	if _, err := os.Stat(path); err == nil {
+		fmt.Printf("file[%s] already exists, it will not be touched, nothing to do\n", path)
+		return nil
+	}
+	return ioutil.WriteFile(path, []byte(contents), 0644)
+}
+
+func execTemplate(name string, templ string, cfg Config) (string, error) {
+	tmpl, err := texttemplate.New(name).Parse(templ)
+	if err != nil {
+		return "", fmt.Errorf("error creating %s template: %s", name, err)
+	}
+
+	buf := &bytes.Buffer{}
+
+	err = tmpl.Execute(buf, cfg)
+	if err != nil {
+		return "", fmt.Errorf("error executing %s template: %s", name, err)
+	}
+
+	return buf.String(), nil
+}
+
+func ensureDir(dir string) error {
+	return os.MkdirAll(dir, 0755)
+}
