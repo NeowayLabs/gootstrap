@@ -15,9 +15,9 @@ func Makefile(cfg MakefileCfg) (string, error) {
 }
 
 const makefileTemplate = `version ?= latest
-img = {{.DockerImg}}/:$(version)
+img = {{.DockerImg}}:$(version)
 imgdev = {{.DockerImg}}dev:$(version)
-run=docker run --rm -ti -v $(shell pwd):/app $(img)
+run=docker run --rm -ti -v $(shell pwd):/app $(imgdev)
 cov=coverage.out
 covhtml=coverage.html
 

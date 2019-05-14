@@ -19,10 +19,24 @@ echo
 echo "let the tests begin"
 cd $projectdir
 
+echo
+echo "building"
 make build
+
+echo
+echo "checking"
 make check
+
+echo
+echo "analyzing"
 make analyze
+
+echo
+echo "coverage"
 make coverage
+
+echo
+echo "final image build"
 make image
 
 echo
