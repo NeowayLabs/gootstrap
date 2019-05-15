@@ -14,9 +14,6 @@ ARG GROUP_ID
 RUN groupadd -g ${GROUP_ID} ${USER} && \
     useradd -m -g ${GROUP_ID} -u ${USER_ID} ${USER}
 
-RUN mkdir -p /app && \
-    chown -R ${USER_ID}:${GROUP_ID} /app
-
 USER ${USER_ID}:${GROUP_ID}
 
 WORKDIR /app
