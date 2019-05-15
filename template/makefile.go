@@ -3,8 +3,10 @@ package template
 const Makefile = `version ?= latest
 img = {{.DockerImg}}:$(version)
 imgdev = {{.DockerImg}}dev:$(version)
-dockeruser=--user "$(shell id -u $$USER)":"$(shell id -g $$USER)"
-run=docker run --rm -ti -v $(shell pwd):/app $(dockeruser) $(imgdev)
+uid=$(shell id -u $$USER)
+gid=$(shell id -g $$USER)
+dockerbuilduser=--build-arg USER_ID=$(uid) --build-arg GROUP_ID=$(gid) --build-arg USER
+run=docker run --rm -ti -v $(shell pwd):/app $(imgdev)
 cov=coverage.out
 covhtml=coverage.html
 
@@ -20,7 +22,7 @@ image: build
 	docker build . -t $(img)
 
 imagedev:
-	docker build . -t $(imgdev) -f ./hack/Dockerfile
+	docker build . -t $(imgdev) -f ./hack/Dockerfile $(dockerbuilduser)
 
 release: guard-version publish
 	git tag -a $(version) -m "Generated release "$(version)

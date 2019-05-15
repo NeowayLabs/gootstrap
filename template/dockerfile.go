@@ -7,22 +7,19 @@ ENV GOLANG_CI_LINT_VERSION=v{{.CILintVersion}}
 RUN cd /usr && \
     wget -O - -q https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s ${GOLANG_CI_LINT_VERSION}
 
+ARG USER
+ARG USER_ID
+ARG GROUP_ID
+
+RUN groupadd -g ${GROUP_ID} ${USER} && \
+    useradd -m -g ${GROUP_ID} -u ${USER_ID} ${USER}
+
+RUN mkdir -p /app && \
+    chown -R ${USER_ID}:${GROUP_ID} /app
+
+USER ${USER_ID}:${GROUP_ID}
+
 WORKDIR /app
-
-# WHY: Keep caches of packages inside the image so
-# we dont need to download them all the time
-COPY go.mod ./go.mod
-COPY go.sum ./go.sum
-
-RUN go mod download
-
-# WHY: Since we map the host user to the container
-# access to these dirs fails because of permission
-# issues. This is usually a bad idea but since we just
-# use this image locally to build the code it seems OK.
-RUN mkdir -p /.cache && \
-    chmod 777 -R /.cache && \
-    chmod 777 -R /go
 `
 
 const Dockerfile = `FROM alpine:{{.AlpineVersion}}
