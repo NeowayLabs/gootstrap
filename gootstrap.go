@@ -26,9 +26,12 @@ func CreateProject(cfg Config, rootdir string) error {
 	files := map[string]string{
 		"go.sum":                           "",
 		"go.mod":                           template.GoMod,
+		"README.md":                        template.Readme,
 		"Makefile":                         template.Makefile,
 		"Dockerfile":                       template.Dockerfile,
 		"hack/Dockerfile":                  template.DockerfileDev,
+		".gitignore":                       template.GitIgnore,
+		".gitlab-ci.yml":                   template.GitlabCI,
 		"cmd/{{.Project}}/{{.Project}}.go": template.Cmd,
 	}
 
