@@ -10,8 +10,7 @@ language: go
 
 go:
   - tip
-  - 1.9
-  - 1.8
+  - 1.12
 
 script:
   - ./check.sh

@@ -1,4 +1,0 @@
-FROM golang:1.9
-
-RUN go get github.com/tools/godep
-RUN go get honnef.co/go/tools/...

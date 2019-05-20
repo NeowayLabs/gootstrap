@@ -1,4 +1,6 @@
-package main
+package template
+
+const Cmd = `package main
 
 import (
 	"flag"
@@ -17,7 +19,8 @@ func main() {
 	flag.Parse()
 
 	if version {
-		fmt.Printf("build tag: %s\n", Version)
+		fmt.Printf("version: %s\n", Version)
 		return
 	}
 }
+`

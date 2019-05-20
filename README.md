@@ -1,66 +1,45 @@
-# Gootstrap
+# gopt
 
-Gootstrap aims to help you bootstrap Go projects.
+Gootstrap stands for Go Bootstrap. It aims to provide bootstraping when
+starting Go projects, helping you to go from 0 to 100 and with some
+opinionated good practices/tooling like:
 
-It provides just a set of scripts that you can copy
-to your Go project to help you:
+* Static Analysis
+* Coverage
+* Continuous Integration
+* Formatting git hooks
+* Reproducible builds
 
-* Vendor things, like conan (no semver, you have integration tests right ?)
-* Run tests recursively without including the vendor directory
-* Run tests with coverage, coalescing all the packages reports in one
-* Cool static analysis
-* Embedding --version on binaries using git commit tag
+The idea is to give a head start when starting a project not
+contemplate every detail that a project may need, so after
+generating the files you probably will need to add more
+things as necessary.
 
-All commands happens on top of docker since it
-is the basis of our development environments and production deployment.
+# Install
 
-It has much less usefulness in Go than other languages (since Go is very
-simple, specially with vendoring) but at least avoids differences on Go
-versions between developers and CI servers, also promotes uniformity on how
-we work with other languages.
-
-We are also striving to do governance through code, spreading
-good practices and good tooling out to new projects, reducing time
-to bootstrap new projects.
-
-## Installation
-
-Run:
+Just run:
 
 ```
-go get github.com/NeowayLabs/gootstrap
+go install github.com/NeowayLabs/gootstrap/cmd/gootstrap
 ```
 
-And that is it =)
+# Usage
 
-## Usage
-
-After creating the local directory for your Go project
-(or cloning it), you will have something like:
+Create the repository for your project, clone it and inside it run:
 
 ```
-$GOPATH/src/domain/yourproject
+gootstrap --docker-image <image-name> --project <project name>
 ```
 
-Just:
+And it will generate all the files so you can start coding.
 
-```
-cd $GOPATH/src/domain/yourproject
-./gootstrap <option1> <option2>
-```
+If you want to explicitly pass the directory where the files
+are going to be generated you can use **--output-dir**.
 
-The help of the project should be enough to elaborate
-on available options.
+Any files that already exist on the given directory will
+be left untouched, gootstrap is only constructive, never destructive
+(at least it strives to be).
 
-Just be aware that besides running everything inside docker
-containers it is important that the project is inside the
-GOPATH of your host.
-
-Some details on how the code is mapped to the containers
-depend on this, also if you do so you will be able
-to build and run tests directly on your host too if
-you want (autocomplete and code navigation will also
-work properly in vendored dependencies).
-
-Files that are unknown to gootstrap or that already exists
-will be left alone.
+Files will be generated assuming that your project builds a
+executable, like a command or a service/daemon. Support for libraries
+is yet to be built.
