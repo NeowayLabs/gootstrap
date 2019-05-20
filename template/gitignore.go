@@ -1,3 +1,5 @@
 package template
 
-const GitIgnore = "cmd/{{.Project}}/{{.Project}}"
+const GitIgnore = `cmd/{{.Project}}/{{.Project}}
+.gomodcache
+`
