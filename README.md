@@ -1,5 +1,8 @@
 # Gootstrap
 
+[![Build Status](https://travis-ci.org/NeowayLabs/gootstrap.svg?branch=master)](https://travis-ci.org/NeowayLabs/gootstrap)
+[![Go Report Card](https://goreportcard.com/badge/github.com/NeowayLabs/gootstrap)](https://goreportcard.com/report/github.com/NeowayLabs/gootstrap)
+
 Gootstrap stands for Go Bootstrap. It aims to provide bootstraping when
 starting Go projects, helping you to go from 0 to 100 and with some
 opinionated good practices/tooling like:
