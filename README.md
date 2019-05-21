@@ -4,17 +4,24 @@ Gootstrap stands for Go Bootstrap. It aims to provide bootstraping when
 starting Go projects, helping you to go from 0 to 100 and with some
 opinionated good practices/tooling like:
 
+* Reproducible builds
 * Versioned builds
 * Static Analysis
-* Coverage
+* Coverage Analysis
+* Code Formatting
 * Continuous Integration
 * Git hooks
-* Reproducible builds
+* Tagged releases
 
 The idea is to give a head start when starting a project not
 contemplate every detail that a project may need, so after
 generating the files you probably will need to add more
 things as necessary.
+
+The generated project relies on [Docker](https://www.docker.com/)
+as a development environment build tool and releasing tool.
+But the generated code will also work with using Go directly
+from the command line in your host.
 
 # Install
 
