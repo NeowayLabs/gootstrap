@@ -32,6 +32,14 @@ echo "analyzing"
 make analyze
 
 echo
+echo "formatting"
+make fmt
+
+echo
+echo "mod tidy"
+make modtidy
+
+echo
 echo "final image build"
 make image
 

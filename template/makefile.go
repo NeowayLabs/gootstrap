@@ -40,9 +40,6 @@ release: guard-version publish
 publish: image
 	docker push $(img)
 
-shell: modcache imagedev
-	$(run) sh
-
 build: modcache imagedev
 	$(run) go build -v -ldflags "-X main.Version=$(version)" -o ./cmd/{{.Project}}/{{.Project}} ./cmd/{{.Project}}
 
@@ -55,4 +52,13 @@ coverage: modcache check
 
 analyze: modcache imagedev
 	$(run) golangci-lint run ./...
+
+modtidy: modcache imagedev
+	$(run) go mod tidy
+
+fmt: modcache imagedev
+	$(run) gofmt -w -s -l .
+
+shell: modcache imagedev
+	$(run) sh
 `
