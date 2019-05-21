@@ -31,9 +31,7 @@ image: build
 	docker build . -t $(img)
 
 imagedev:
-	@echo "building dev env"
-	@docker build . -t $(imgdev) -f ./hack/Dockerfile $(dockerbuilduser) > .devimgbuild.logs
-	@echo "dev env built"
+	docker build . -t $(imgdev) -f ./hack/Dockerfile $(dockerbuilduser)
 
 release: guard-version publish
 	git tag -a $(version) -m "Generated release "$(version)
