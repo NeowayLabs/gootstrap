@@ -1,9 +1,9 @@
 package template
 
-const GitlabCI = `job-analyze:
+const GitlabCI = `job-static-analysis:
   stage: test
   script:
-   - make analyze
+   - make static-analysis
 
 job-check:
   stage: test
