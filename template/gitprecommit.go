@@ -7,6 +7,6 @@ set -o nounset
 
 make fmt
 make modtidy
-make analyze
+make static-analysis
 make check
 `

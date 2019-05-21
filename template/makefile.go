@@ -50,7 +50,7 @@ coverage: modcache check
 	$(run) go tool cover -html=$(cov) -o=$(covhtml)
 	xdg-open coverage.html
 
-analyze: modcache imagedev
+static-analysis: modcache imagedev
 	$(run) golangci-lint run ./...
 
 modtidy: modcache imagedev

@@ -29,7 +29,7 @@ make check
 
 echo
 echo "analyzing"
-make analyze
+make static-analysis
 
 echo
 echo "formatting"
