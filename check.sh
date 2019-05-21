@@ -40,6 +40,10 @@ echo "mod tidy"
 make modtidy
 
 echo
+echo "githooks"
+make githooks
+
+echo
 echo "final image build"
 make image
 

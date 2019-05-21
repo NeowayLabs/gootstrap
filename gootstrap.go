@@ -30,6 +30,7 @@ func CreateProject(cfg Config, rootdir string) error {
 		"Makefile":                         template.Makefile,
 		"Dockerfile":                       template.Dockerfile,
 		"hack/Dockerfile":                  template.DockerfileDev,
+		"hack/githooks/pre-commit":         template.GitHookPreCommit,
 		".gitignore":                       template.GitIgnore,
 		".gitlab-ci.yml":                   template.GitlabCI,
 		"cmd/{{.Project}}/{{.Project}}.go": template.Cmd,
