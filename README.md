@@ -33,14 +33,25 @@ go install github.com/NeowayLabs/gootstrap/cmd/gootstrap
 
 # Usage
 
-Create the repository for your project, clone the
-empty project and inside it run:
+To quickly checkout how a project is generated run:
+
+```
+gootstrap -module "whatever.com/group/project" -image "group/project" -output-dir /tmp/test
+```
+
+And you can check your brand new project at **/tmp/test**,
+If no **-output-dir** is passed it defaults
+to the working directory where the command is being executed.
+
+So if you already have a git repository created for your project
+(preferably empty) just clone the project and inside it run:
 
 ```
 gootstrap -module "whatever.com/group/project" -image "group/project"
 ```
 
-And it will generate all the files so you can start coding.
+And it will generate all the files so you can start coding
+(you need to add the generated files to git manually).
 
 The **-module** parameter is the name of the Go module exported by your
 project. Even if you are not developing a library this is necessary
@@ -53,13 +64,10 @@ by where they where in the file system, now the module declaration
 controls how packages are imported (their path). For more
 details on how Go modules works check [this](https://blog.golang.org/using-go-modules).
 
-If you want to explicitly pass the directory where the files
-are going to be generated you can use **--output-dir**, it default
-to the working directory where the command is being executed.
-
 Any files that already exist on the given directory will
-be left untouched, gootstrap is only constructive, never destructive.
+be left untouched, gootstrap don't change any files or delete them.
 
 Files will be generated assuming that your project builds a
 executable, like a command or a service/daemon. Support for libraries
-is yet to be built.
+is yet to be built (although it is not hard to just delete the command
+related targets and files).
