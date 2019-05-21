@@ -4,6 +4,7 @@ Gootstrap stands for Go Bootstrap. It aims to provide bootstraping when
 starting Go projects, helping you to go from 0 to 100 and with some
 opinionated good practices/tooling like:
 
+* Versioned builds
 * Static Analysis
 * Coverage
 * Continuous Integration
