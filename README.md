@@ -7,7 +7,7 @@ opinionated good practices/tooling like:
 * Static Analysis
 * Coverage
 * Continuous Integration
-* Formatting git hooks
+* Git hooks
 * Reproducible builds
 
 The idea is to give a head start when starting a project not
