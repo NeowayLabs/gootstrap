@@ -25,11 +25,14 @@ from the command line in your host.
 
 # Install
 
-Just run:
+To generate a project you need to install gootstrap, if you
+have Go installed in your host it is as easy as:
 
 ```
 go install github.com/NeowayLabs/gootstrap/cmd/gootstrap
 ```
+
+To use the generated project you will need [Docker](https://www.docker.com/).
 
 # Usage
 
