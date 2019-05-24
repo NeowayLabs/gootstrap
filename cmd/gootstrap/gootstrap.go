@@ -21,7 +21,7 @@ func main() {
 
 	flag.StringVar(
 		&dockerimg,
-		"docker-image",
+		"image",
 		"",
 		"docker image of the project",
 	)

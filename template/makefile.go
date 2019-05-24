@@ -25,7 +25,7 @@ guard-%:
 # WHY: If cache dir does not exist it is mapped inside container as root
 # If it exists it is mapped belonging to the non-root user inside the container
 modcache:
-	mkdir -p $(modcachedir)
+	@mkdir -p $(modcachedir)
 
 image: build
 	docker build . -t $(img)
@@ -40,9 +40,6 @@ release: guard-version publish
 publish: image
 	docker push $(img)
 
-shell: modcache imagedev
-	$(run) sh
-
 build: modcache imagedev
 	$(run) go build -v -ldflags "-X main.Version=$(version)" -o ./cmd/{{.Project}}/{{.Project}} ./cmd/{{.Project}}
 
@@ -53,6 +50,22 @@ coverage: modcache check
 	$(run) go tool cover -html=$(cov) -o=$(covhtml)
 	xdg-open coverage.html
 
-analyze: modcache imagedev
+static-analysis: modcache imagedev
 	$(run) golangci-lint run ./...
+
+modtidy: modcache imagedev
+	$(run) go mod tidy
+
+fmt: modcache imagedev
+	$(run) gofmt -w -s -l .
+
+githooks:
+	@echo "copying git hooks"
+	@mkdir -p .git/hooks
+	@cp hack/githooks/pre-commit .git/hooks/pre-commit
+	@chmod +x .git/hooks/pre-commit
+	@echo "git hooks copied"
+
+shell: modcache imagedev
+	$(run) sh
 `
