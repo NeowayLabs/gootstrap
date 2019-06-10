@@ -1,6 +1,6 @@
 package template
 
-const DockerfileDev = `FROM golang:{{.GoVersion}}-stretch
+const DockerfileDev = `FROM golang@{{.GoDigest}}
 
 ENV GOLANG_CI_LINT_VERSION=v{{.CILintVersion}}
 
@@ -19,7 +19,7 @@ USER ${USER_ID}:${GROUP_ID}
 WORKDIR /app
 `
 
-const Dockerfile = `FROM alpine:{{.AlpineVersion}}
+const Dockerfile = `FROM alpine@{{.AlpineDigest}}
 
 RUN apk --no-cache update && \
     apk --no-cache add ca-certificates && \

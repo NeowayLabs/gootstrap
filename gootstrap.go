@@ -16,9 +16,9 @@ type Config struct {
 	Project       string
 	Module        string
 	DockerImg     string
-	GoVersion     string
+	GoDigest      string
 	CILintVersion string
-	AlpineVersion string
+	AlpineDigest  string
 }
 
 // CreateProject creates a project

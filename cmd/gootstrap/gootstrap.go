@@ -9,9 +9,9 @@ import (
 	"github.com/NeowayLabs/gootstrap"
 )
 
-const GoVersion = "1.12.5"
+const GoDigest = "sha256:d17a1d8f0c20d108d1177d560f4afb9de10104c46df756d885cfa4282bbaac65" // golang:1.12.5-stretch
 const CILintVersion = "1.13.2"
-const AlpineVersion = "3.9"
+const AlpineDigest = "sha256:769fddc7cc2f0a1c35abb2f91432e8beecf83916c421420e6a6da9f8975464b6" // alpine:3.9
 
 func main() {
 
@@ -60,9 +60,9 @@ func main() {
 		Project:       project,
 		Module:        module,
 		DockerImg:     dockerimg,
-		GoVersion:     GoVersion,
+		GoDigest:      GoDigest,
 		CILintVersion: CILintVersion,
-		AlpineVersion: AlpineVersion,
+		AlpineDigest:  AlpineDigest,
 	}
 	gootstrap.CreateProject(cfg, outputdir)
 }
