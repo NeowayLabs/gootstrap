@@ -10,7 +10,7 @@ wd=$(shell pwd)
 modcachedir=$(wd)/.gomodcachedir
 cachevol=$(modcachedir):/go/pkg/mod
 appvol=$(wd):/app
-run=docker run --rm -ti -v $(appvol) -v $(cachevol) $(imgdev)
+run=docker run --rm -ti -e GOOS=linux -e GOARCH=amd64 -v $(appvol) -v $(cachevol) $(imgdev)
 cov=coverage.out
 covhtml=coverage.html
 
@@ -41,7 +41,7 @@ publish: image
 	docker push $(img)
 
 build: modcache imagedev
-	$(run) go build -v -ldflags "-X main.Version=$(version)" -o ./cmd/{{.Project}}/{{.Project}} ./cmd/{{.Project}}
+	$(run) go build -v -ldflags "-w -s -X main.Version=$(version)" -o ./cmd/{{.Project}}/{{.Project}} ./cmd/{{.Project}}
 
 check: modcache imagedev
 	$(run) go test -timeout 60s -race -coverprofile=$(cov) ./...
