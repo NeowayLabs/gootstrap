@@ -10,7 +10,7 @@ wd=$(shell pwd)
 modcachedir=$(wd)/.gomodcachedir
 cachevol=$(modcachedir):/go/pkg/mod
 appvol=$(wd):/app
-run=docker run --rm -ti -e GOOS=linux -e GOARCH=amd64 -v $(appvol) -v $(cachevol) $(imgdev)
+run=docker run --rm -ti -e CGO_ENABLED=0 -e GOOS=linux -e GOARCH=amd64 -v $(appvol) -v $(cachevol) $(imgdev)
 cov=coverage.out
 covhtml=coverage.html
 
