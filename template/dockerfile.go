@@ -22,7 +22,7 @@ WORKDIR /app
 const Dockerfile = `FROM alpine:{{.AlpineVersion}}
 
 RUN apk --no-cache update && \
-    apk --no-cache add ca-certificates && \
+    apk --no-cache add ca-certificates tzdata && \
     rm -rf /var/cache/apk/*
 
 RUN adduser -D -g '' appuser
