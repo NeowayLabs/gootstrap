@@ -25,7 +25,12 @@ RUN apk --no-cache update && \
     apk --no-cache add ca-certificates && \
     rm -rf /var/cache/apk/*
 
+RUN adduser -D -g '' appuser
+
 COPY ./cmd/{{.Project}}/{{.Project}} /app/{{.Project}}
+
+# Use an unprivileged user.
+USER appuser
 
 ENTRYPOINT ["/app/{{.Project}}"]
 `
