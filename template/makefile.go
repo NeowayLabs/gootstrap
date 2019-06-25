@@ -28,10 +28,10 @@ modcache:
 	@mkdir -p $(modcachedir)
 
 image: build
-	docker build . -t $(img)
+	DOCKER_CONTENT_TRUST=1 docker build . -t $(img)
 
 imagedev:
-	docker build . -t $(imgdev) -f ./hack/Dockerfile $(dockerbuilduser)
+	DOCKER_CONTENT_TRUST=1 docker build . -t $(imgdev) -f ./hack/Dockerfile $(dockerbuilduser)
 
 release: guard-version publish
 	git tag -a $(version) -m "Generated release "$(version)
