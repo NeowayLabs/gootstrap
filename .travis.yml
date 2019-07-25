@@ -1,5 +1,6 @@
 os:
   - linux
+  - osx
 
 sudo: required
 
@@ -9,8 +10,8 @@ services:
 language: go
 
 go:
-  - tip
-  - 1.12
+  - "tip"
+  - "1.12"
 
 script:
   - ./check.sh
