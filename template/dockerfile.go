@@ -19,7 +19,7 @@ USER ${USER_ID}:${GROUP_ID}
 WORKDIR /app
 `
 
-const Dockerfile = `FROM alpine:{{.AlpineVersion}}
+const Dockerfile = `FROM alpine:{{.AlpineVersion}} as base
 
 RUN apk --no-cache update && \
     apk --no-cache add ca-certificates tzdata && \
@@ -28,6 +28,14 @@ RUN apk --no-cache update && \
 RUN adduser -D -g '' appuser
 
 COPY ./cmd/{{.Project}}/{{.Project}} /app/{{.Project}}
+
+FROM scratch
+
+COPY --from=base /usr/share/zoneinfo /usr/share/zoneinfo
+COPY --from=base /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+COPY --from=base /etc/passwd /etc/passwd
+COPY --from=base /etc/group /etc/group
+COPY --from=base /app/{{.Project}} /app/{{.Project}}
 
 # Use an unprivileged user.
 USER appuser
