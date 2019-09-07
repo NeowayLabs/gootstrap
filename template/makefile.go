@@ -5,7 +5,7 @@ img = {{.DockerImg}}:$(version)
 imgdev = {{.DockerImg}}dev:$(version)
 uid=$(shell id -u $$USER)
 gid=$(shell id -g $$USER)
-dockerbuilduser=--build-arg USER_ID=$(uid) --build-arg GROUP_ID=$(gid) --build-arg USER
+dockerbuilduser=--build-arg USER_ID=$(uid) --build-arg GROUP_ID=$(gid)
 wd=$(shell pwd)
 modcachedir=$(wd)/.gomodcachedir
 cachevol=$(modcachedir):/go/pkg/mod
@@ -28,11 +28,11 @@ guard-%:
 modcache:
 	@mkdir -p $(modcachedir)
 
-image: build
-	docker build . -t $(img)
+image:
+	docker build . -t $(img) --build-arg VERSION=$(version)
 
 imagedev:
-	docker build . -t $(imgdev) -f ./hack/Dockerfile $(dockerbuilduser)
+	docker build . --target base -t $(imgdev) $(dockerbuilduser)
 
 release: guard-version publish
 	git tag -a $(version) -m "Generated release "$(version)
