@@ -42,7 +42,7 @@ publish: image
 	docker push $(img)
 
 build: modcache imagedev
-	$(runbuild) go build -v -ldflags "-w -s -X main.Version=$(version)" -o ./cmd/{{.Project}}/{{.Project}} ./cmd/{{.Project}}
+	$(runbuild) go build -v -ldflags "-w -s -X {{.Module}}/pkg/version.GitVersion=$(version)" -o ./cmd/{{.Project}}/{{.Project}} ./cmd/{{.Project}}
 
 check: modcache imagedev
 	$(run) go test -timeout 60s -race -coverprofile=$(cov) ./...

@@ -34,6 +34,7 @@ func CreateProject(cfg Config, rootdir string) error {
 		".gitignore":                       template.GitIgnore,
 		".dockerignore":                    template.DockerIgnore,
 		".gitlab-ci.yml":                   template.GitlabCI,
+		"pkg/version/version.go":           template.Version,
 		"cmd/{{.Project}}/{{.Project}}.go": template.Cmd,
 	}
 
