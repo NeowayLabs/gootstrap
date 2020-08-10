@@ -9,9 +9,11 @@ import (
 	"github.com/NeowayLabs/gootstrap"
 )
 
-const GoVersion = "1.12.5"
-const CILintVersion = "1.13.2"
-const AlpineVersion = "3.9"
+const (
+	GoVersion     = "1.14.4"
+	CILintVersion = "v1.28"
+	AlpineVersion = "3.11"
+)
 
 func main() {
 

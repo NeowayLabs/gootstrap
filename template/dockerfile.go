@@ -1,44 +1,44 @@
 package template
 
-const DockerfileDev = `FROM golang:{{.GoVersion}}-stretch
+const Dockerfile = `# ---------------------------------------------------------------------
+#  The first stage container, for image dev
+# ---------------------------------------------------------------------
+FROM golang:{{.GoVersion}}-stretch as base
 
-ENV GOLANG_CI_LINT_VERSION=v{{.CILintVersion}}
-
-RUN cd /usr && \
-    wget -O - -q https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s ${GOLANG_CI_LINT_VERSION}
-
-ARG USER
-ARG USER_ID
-ARG GROUP_ID
-
-RUN groupadd -f -g ${GROUP_ID} ${USER} && \
-    useradd -m -g ${GROUP_ID} -u ${USER_ID} ${USER} || echo "user already exists"
-
-USER ${USER_ID}:${GROUP_ID}
+RUN apt-get update && \
+    apt-get dist-upgrade -y && \
+    apt-get install -y --no-install-recommends ca-certificates tzdata && \
+    update-ca-certificates
 
 WORKDIR /app
-`
 
-const Dockerfile = `FROM alpine:{{.AlpineVersion}} as base
+COPY go.sum go.mod ./
+RUN go mod download
 
-RUN apk --no-cache update && \
-    apk --no-cache add ca-certificates tzdata && \
-    rm -rf /var/cache/apk/*
+COPY . .
 
-RUN adduser -D -g '' appuser
+# ---------------------------------------------------------------------
+#  The second stage container, for building the application
+# ---------------------------------------------------------------------
+FROM base AS builder
 
-COPY ./cmd/{{.Project}}/{{.Project}} /app/{{.Project}}
+ARG VERSION
 
-FROM scratch
+RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-w -s -X main.version=${VERSION}" -o /go/bin/{{.Project}} ./cmd/{{.Project}}
+
+# ---------------------------------------------------------------------
+#  The third stage container, for running the application
+# --------------------------------------------------------------------
+FROM alpine:{{.AlpineVersion}}
 
 COPY --from=base /usr/share/zoneinfo /usr/share/zoneinfo
 COPY --from=base /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=base /etc/passwd /etc/passwd
 COPY --from=base /etc/group /etc/group
-COPY --from=base /app/{{.Project}} /app/{{.Project}}
+COPY --from=builder /go/bin/{{.Project}} /bin/{{.Project}}
 
 # Use an unprivileged user.
-USER appuser
+USER nobody
 
-ENTRYPOINT ["/app/{{.Project}}"]
+ENTRYPOINT ["/bin/{{.Project}}"]
 `

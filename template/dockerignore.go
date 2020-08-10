@@ -1,3 +1,3 @@
 package template
 
-const DockerIgnore = `.gomodcachedir`
+const DockerIgnore = ``

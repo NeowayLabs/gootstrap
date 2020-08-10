@@ -1,72 +1,63 @@
 package template
 
 const Makefile = `version ?= latest
-img = {{.DockerImg}}:$(version)
+appname = corporation-directory
+img =  {{.DockerImg}}:$(version)
 imgdev = {{.DockerImg}}dev:$(version)
-uid=$(shell id -u $$USER)
-gid=$(shell id -g $$USER)
-dockerbuilduser=--build-arg USER_ID=$(uid) --build-arg GROUP_ID=$(gid) --build-arg USER
-wd=$(shell pwd)
-modcachedir=$(wd)/.gomodcachedir
-cachevol=$(modcachedir):/go/pkg/mod
-appvol=$(wd):/app
-run=docker run --rm -ti -v $(appvol) -v $(cachevol) $(imgdev)
-runbuild=docker run --rm -ti -e CGO_ENABLED=0 -e GOOS=linux -e GOARCH=amd64 -v $(appvol) -v $(cachevol) $(imgdev)
-cov=coverage.out
-covhtml=coverage.html
 
-all: check build
+wd = $(shell pwd)
 
-guard-%:
-	@ if [ "${${*}}" = "" ]; then \
-		echo "Variable '$*' not set"; \
-		exit 1; \
-	fi
+dockerrunbase = docker run --rm $(vols)
+rundev = $(dockerrunbase) $(imgdev)
 
-# WHY: If cache dir does not exist it is mapped inside container as root
-# If it exists it is mapped belonging to the non-root user inside the container
-modcache:
-	@mkdir -p $(modcachedir)
+cov = coverage.out
+covhtml = coverage.html
 
-image: build
-	docker build . -t $(img)
+testflag ?= -race -timeout 60s -coverprofile=$(cov) $(flag)
+gotest = go test -failfast ./... $(testflag) $(if $(testcase),-run "$(testcase)")
 
-imagedev:
-	docker build . -t $(imgdev) -f ./hack/Dockerfile $(dockerbuilduser)
+all: static-analysis test test-integration dev-build build
 
-release: guard-version publish
-	git tag -a $(version) -m "Generated release "$(version)
-	git push origin $(version)
+.PHONY: help
+help: ## display this help
+	@ echo "Please use 'make <target>' where <target> is one of:"
+	@ echo
+	@ grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "    \033[36m%-16s\033[0m - %s\n", $$1, $$2}'
+	@ echo
 
-publish: image
-	docker push $(img)
+.PHONY: build
+build: ## build final image
+	docker build . -t $(img) --build-arg VERSION=$(version)
 
-build: modcache imagedev
-	$(runbuild) go build -v -ldflags "-w -s -X main.Version=$(version)" -o ./cmd/{{.Project}}/{{.Project}} ./cmd/{{.Project}}
+.PHONY: dev-build
+dev-build: ## build dev image
+	docker build . --target base -t $(imgdev)
 
-check: modcache imagedev
-	$(run) go test -timeout 60s -race -coverprofile=$(cov) ./...
+.PHONY: test
+test: dev-build ## Run unit tests, set testcase=<testcase> or flag=-v if you need them
+	$(rundev) $(gotest)
 
-coverage: modcache check
-	$(run) go tool cover -html=$(cov) -o=$(covhtml)
+.PHONY: coverage
+coverage: override vols+=-v $(wd):/app ## show test coverage
+coverage: test
+	$(rundev) go tool cover -html=$(cov) -o=$(covhtml)
 	xdg-open coverage.html
 
-static-analysis: modcache imagedev
-	$(run) golangci-lint run ./...
+.PHONY: lint
+lint: override vols+=-v $(wd):/app ## run golang-ci lint
+lint:
+	$(dockerrunbase) -w /app golangci/golangci-lint:{{.CILintVersion}} \
+		golangci-lint run --color always --enable-all \
+		./...
 
-modtidy: modcache imagedev
-	$(run) go mod tidy
+.PHONY: fmt
+fmt: dev-build ## run gofmt
+	$(rundev) gofmt -w -s -l .
 
-fmt: modcache imagedev
-	$(run) gofmt -w -s -l .
+.PHONY: static-analysis
+static-analysis: fmt lint ## run gofmt and golangci-lint
 
-githooks:
-	@echo "copying git hooks"
-	@mkdir -p .git/hooks
-	@cp hack/githooks/pre-commit .git/hooks/pre-commit
-	@chmod +x .git/hooks/pre-commit
-	@echo "git hooks copied"
-
-shell: modcache imagedev
-	$(run) sh
+.PHONY: run
+run: ## run the code with given params
+	@docker run --rm -v $(wd):/files $(img) -file files/$(file) -query "$(query)"
 `

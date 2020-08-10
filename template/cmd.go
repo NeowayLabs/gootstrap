@@ -8,18 +8,18 @@ import (
 )
 
 var (
-	// version is set at build time
-	Version = "No version provided at build time"
+	version = "dev" // this will be set on build time
 )
+
 
 func main() {
 
-	version := false
-	flag.BoolVar(&version, "version", false, "Show version")
+	showVersion := false
+	flag.BoolVar(&showVersion, "version", false, "Show version")
 	flag.Parse()
 
-	if version {
-		fmt.Printf("version: %s\n", Version)
+	if showVersion {
+		fmt.Printf("version: %s\n", version)
 		return
 	}
 }

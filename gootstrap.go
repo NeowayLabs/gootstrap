@@ -29,8 +29,6 @@ func CreateProject(cfg Config, rootdir string) error {
 		"README.md":                        template.Readme,
 		"Makefile":                         template.Makefile,
 		"Dockerfile":                       template.Dockerfile,
-		"hack/Dockerfile":                  template.DockerfileDev,
-		"hack/githooks/pre-commit":         template.GitHookPreCommit,
 		".gitignore":                       template.GitIgnore,
 		".dockerignore":                    template.DockerIgnore,
 		".gitlab-ci.yml":                   template.GitlabCI,
