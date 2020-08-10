@@ -25,27 +25,11 @@ make build
 
 echo
 echo "checking"
-make check
+make test
 
 echo
 echo "analyzing"
 make static-analysis
-
-echo
-echo "formatting"
-make fmt
-
-echo
-echo "mod tidy"
-make modtidy
-
-echo
-echo "githooks"
-make githooks
-
-echo
-echo "final image build"
-make image
 
 echo
 echo "basic functionalities seems intact"
